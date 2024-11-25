@@ -1,7 +1,10 @@
 [package]
 name = "hermit-loader"
 version = "0.5.2"
-authors = ["Stefan Lankes <slankes@eonerc.rwth-aachen.de>", "Colin Finck <colin.finck@rwth-aachen.de>"]
+authors = [
+  "Stefan Lankes <slankes@eonerc.rwth-aachen.de>",
+  "Colin Finck <colin.finck@rwth-aachen.de>",
+]
 license = "MIT OR Apache-2.0"
 readme = "README.md"
 edition = "2021"
@@ -19,7 +22,7 @@ take-static = "0.1"
 vm-fdt = { version = "0.3", default-features = false, features = ["alloc"] }
 
 [features]
-default = []
+default = ["fc"]
 fc = []
 
 [target.'cfg(all(target_os = "none", target_arch = "x86_64"))'.dependencies]
@@ -27,7 +30,9 @@ multiboot = "0.8"
 
 [target.'cfg(target_arch = "x86_64")'.dependencies]
 uart_16550 = "0.3"
-x86_64 = { version = "0.15", default-features = false, features = ["instructions"] }
+x86_64 = { version = "0.15", default-features = false, features = [
+  "instructions",
+] }
 
 [target.'cfg(target_arch = "aarch64")'.dependencies]
 aarch64-cpu = "10"
@@ -55,6 +60,4 @@ lto = true
 codegen-units = 1
 
 [workspace]
-members = [
-	"xtask",
-]
+members = ["xtask"]
