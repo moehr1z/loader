@@ -1,0 +1,60 @@
+[package]
+name = "hermit-loader"
+version = "0.5.2"
+authors = ["Stefan Lankes <slankes@eonerc.rwth-aachen.de>", "Colin Finck <colin.finck@rwth-aachen.de>"]
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+edition = "2021"
+
+[dependencies]
+align-address = "0.3"
+allocator-api2 = { version = "0.2", default-features = false }
+anstyle = { version = "1", default-features = false }
+cfg-if = "1"
+hermit-entry = { version = "0.10", features = ["loader"] }
+log = "0.4"
+one-shot-mutex = "0.1"
+sptr = "0.3"
+take-static = "0.1"
+vm-fdt = { version = "0.3", default-features = false, features = ["alloc"] }
+
+[features]
+default = []
+fc = []
+
+[target.'cfg(all(target_os = "none", target_arch = "x86_64"))'.dependencies]
+multiboot = "0.8"
+
+[target.'cfg(target_arch = "x86_64")'.dependencies]
+uart_16550 = "0.3"
+x86_64 = { version = "0.15", default-features = false, features = ["instructions"] }
+
+[target.'cfg(target_arch = "aarch64")'.dependencies]
+aarch64-cpu = "10"
+hermit-dtb = { version = "0.1" }
+goblin = { version = "0.9", default-features = false, features = ["elf64"] }
+
+[target.'cfg(target_os = "uefi")'.dependencies]
+uefi = { version = "0.33", features = ["alloc", "panic_handler", "qemu"] }
+
+[target.'cfg(target_arch = "riscv64")'.dependencies]
+fdt = "0.1"
+naked-function = "0.1"
+sbi-rt = "0.0.3"
+sptr = "0.3"
+
+[profile.dev]
+# This is a workaround for the loader growing too large to boot with QEMU's multiboot.
+# This broke last with nightly-2024-06-29 (https://github.com/rust-lang/rust/compare/9c3bc805dd9cb84019c124b9a50fdff1e62a7ec9...e9e6e2e444c30c23a9c878a88fbc3978c2acad95)
+# We should fix this properly, allowing larger loaders to still function correctly.
+opt-level = 1
+
+[profile.release]
+strip = "debuginfo"
+lto = true
+codegen-units = 1
+
+[workspace]
+members = [
+	"xtask",
+]
